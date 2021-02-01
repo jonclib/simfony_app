@@ -2,90 +2,93 @@
 
 namespace App\Controller;
 
-// agregar la entidad
 use App\Entity\Users;
-
+use App\Form\UsersType;
+use App\Repository\UsersRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @Route("/users")
+ */
 class UsersController extends AbstractController
 {
     /**
-     * @Route("/users", name="users")
+     * @Route("/", name="users_index", methods={"GET"})
      */
-    public function index(): Response
+    public function index(UsersRepository $usersRepository): Response
     {
-        // return $this->render('users/index.html.twig', [
-        //     'controller_name' => 'UsersController',
-        // ]);
-
-        //  $entityManager = $this->getDoctrine()->getManager();
-
-        // $users = new Users();
-        // $users->setFirstName('jonathan');
-        // $users->setLastName('castro');
-        // $users->setEmail('admin@hotmail.com');
-
-        // // tell Doctrine you want to (eventually) save the Product (no queries yet)
-        // $entityManager->persist($users);
-
-        // // actually executes the queries (i.e. the INSERT query)
-        // $entityManager->flush();
-
-        // return new Response('usuario registrado'.$users->getId());
-
-
-
-
-    	// $users = $this->getDoctrine()
-    	// ->getRepository(Users::class)
-    	// ->findAll();
-
-        // if (!$product) {
-        //     throw $this->createNotFoundException(
-        //         'No product found for id '.$id
-        //     );
-        // }
-
-
-    	$repository = $this->getDoctrine()->getRepository(Users::class);
-
-    	$users = $repository->findAll();
-
-    	return new Response('sd'.$users);
-
-    	// return $users;
-
-
-
+        return $this->render('users/index.html.twig', [
+            'users' => $usersRepository->findAll(),
+        ]);
     }
 
+    /**
+     * @Route("/new", name="users_new", methods={"GET","POST"})
+     */
+    public function new(Request $request): Response
+    {
+        $user = new Users();
+        $form = $this->createForm(UsersType::class, $user);
+        $form->handleRequest($request);
 
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($user);
+            $entityManager->flush();
 
-    // ejemplo para insertar
-    // public function index(): Response
-    // {
-    //     // return $this->render('users/index.html.twig', [
-    //     //     'controller_name' => 'UsersController',
-    //     // ]);
+            return $this->redirectToRoute('users_index');
+        }
 
-    //      $entityManager = $this->getDoctrine()->getManager();
+        return $this->render('users/new.html.twig', [
+            'user' => $user,
+            'form' => $form->createView(),
+        ]);
+    }
 
-    //     $users = new Users();
-    //     $users->setFirstName('jonathan');
-    //     $users->setLastName('castro');
-    //     $users->setEmail('admin@hotmail.com');
+    /**
+     * @Route("/{id}", name="users_show", methods={"GET"})
+     */
+    public function show(Users $user): Response
+    {
+        return $this->render('users/show.html.twig', [
+            'user' => $user,
+        ]);
+    }
 
-    //     // tell Doctrine you want to (eventually) save the Product (no queries yet)
-    //     $entityManager->persist($users);
+    /**
+     * @Route("/{id}/edit", name="users_edit", methods={"GET","POST"})
+     */
+    public function edit(Request $request, Users $user): Response
+    {
+        $form = $this->createForm(UsersType::class, $user);
+        $form->handleRequest($request);
 
-    //     // actually executes the queries (i.e. the INSERT query)
-    //     $entityManager->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
 
-    //     return new Response('usuario registrado'.$users->getId());
+            return $this->redirectToRoute('users_index');
+        }
 
+        return $this->render('users/edit.html.twig', [
+            'user' => $user,
+            'form' => $form->createView(),
+        ]);
+    }
 
+    /**
+     * @Route("/{id}", name="users_delete", methods={"DELETE"})
+     */
+    public function delete(Request $request, Users $user): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->remove($user);
+            $entityManager->flush();
+        }
 
-    // }
+        return $this->redirectToRoute('users_index');
+    }
 }
