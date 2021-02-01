@@ -23,6 +23,12 @@ class UsersController extends AbstractController
         return $this->render('users/index.html.twig', [
             'users' => $usersRepository->findAll(),
         ]);
+
+        // return new response($usersRepository->findAll());
+
+        // return new response('df');
+
+         // return $this->json($usersRepository->findAll());
     }
 
     /**
