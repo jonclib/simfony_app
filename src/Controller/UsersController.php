@@ -45,6 +45,14 @@ class UsersController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
+
+            // agrege esto apra el flashdata
+            $this->addFlash(
+            'add',
+            'Usuario Registrado'
+        );
+
+
             return $this->redirectToRoute('users_index');
         }
 
@@ -75,6 +83,11 @@ class UsersController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
+            $this->addFlash(
+            'edit',
+            'Usuario Editado'
+        );
+
             return $this->redirectToRoute('users_index');
         }
 
@@ -94,6 +107,12 @@ class UsersController extends AbstractController
             $entityManager->remove($user);
             $entityManager->flush();
         }
+
+
+            $this->addFlash(
+            'delete',
+            'Usuario Eliminado'
+        );
 
         return $this->redirectToRoute('users_index');
     }
