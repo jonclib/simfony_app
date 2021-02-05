@@ -32,6 +32,8 @@ class UsersController extends AbstractController
         'users' => $usersRepository->findAll()            
     ]);
 
+       // return dump($usersRepository->findAll());
+
 
         // return new response($usersRepository->findAll());
 
@@ -52,7 +54,9 @@ class UsersController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
+            // le decimos a doctrine que queremos guardar un usuario
             $entityManager->persist($user);
+            // aqui hacemos el insert como tal
             $entityManager->flush();
 
 
