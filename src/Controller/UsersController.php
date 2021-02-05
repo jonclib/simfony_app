@@ -20,16 +20,25 @@ class UsersController extends AbstractController
      */
     public function index(UsersRepository $usersRepository): Response
     {
-        return $this->render('users/index.html.twig', [
-            'users' => $usersRepository->findAll(),
-        ]);
+        // $test = 'jonathan';
+
+
+        // return $this->render('users/index.html.twig', [
+        //     'users' => $usersRepository->findAll(),
+        //     'test' => $test
+        // ]);
+
+       return $this->render('users/index.html.twig', [
+        'users' => $usersRepository->findAll()            
+    ]);
+
 
         // return new response($usersRepository->findAll());
 
         // return new response('df');
 
          // return $this->json($usersRepository->findAll());
-    }
+   }
 
     /**
      * @Route("/new", name="users_new", methods={"GET","POST"})
@@ -40,17 +49,25 @@ class UsersController extends AbstractController
         $form = $this->createForm(UsersType::class, $user);
         $form->handleRequest($request);
 
+
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
 
 
+            // print_r($request);
+
+            // // exit;
+
+            // return new response();
+
+
             // agrege esto apra el flashdata
             $this->addFlash(
-            'add',
-            'Usuario Registrado'
-        );
+                'add',
+                'Usuario Registrado'
+            );
 
 
             return $this->redirectToRoute('users_index');
@@ -84,9 +101,9 @@ class UsersController extends AbstractController
             $this->getDoctrine()->getManager()->flush();
 
             $this->addFlash(
-            'edit',
-            'Usuario Editado'
-        );
+                'edit',
+                'Usuario Editado'
+            );
 
             return $this->redirectToRoute('users_index');
         }
@@ -109,7 +126,7 @@ class UsersController extends AbstractController
         }
 
 
-            $this->addFlash(
+        $this->addFlash(
             'delete',
             'Usuario Eliminado'
         );
